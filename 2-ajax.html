@@ -8,16 +8,15 @@
             return `https://www.blibli.com/backend/search/products?searchTerm=${keyword}`;
         }
 
-        function getProducts(keyword) {
+        function getProducts(keyword, callbackSuccess, callbackError) {
             // Code AJAX Here!
             const ajax=new XMLHttpRequest();
             ajax.onload=function(){
                 if(ajax.status === 200){
                     const data=JSON.parse(ajax.responseText);
-                    clearProducts();
-                    displayProducts(data);
+                    callbackSuccess(data);
                 }else{
-                    getProductsError();
+                    callbackError();
                 }
             }
             const url=getProductsUrl(keyword);
@@ -70,14 +69,28 @@
             tableProduct.appendChild(table);
         }
 
-        function buttonClick() {
-            getProducts(document.getElementById("keyword").value);
+        function buttonClick(type) {
+            if(type === "table"){
+                getProducts(document.getElementById("keyword").value, function(data){
+                    clearTableProducts();
+                    displayTableProducts(data);
+                }, function(){
+                    getProductsError();
+                });
+            }
+            getProducts(document.getElementById("keyword").value, function(data){
+                clearProducts();
+                displayProducts(data);
+            }, function(){
+                getProductsError();
+            });
+            console.log(`Success click button`);
         }
     </script>
 </head>
 <body>
 <input type="text" id="keyword">
-<button onclick="buttonClick()">Search Products</button>
+<button onclick="buttonClick('table')">Search Products</button>
 <ul id="products"></ul>
 <div id="table-products"></div>
 </body>
