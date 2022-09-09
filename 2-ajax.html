@@ -11,12 +11,18 @@
         function getProducts(keyword) {
             // Code AJAX Here!
             const ajax=new XMLHttpRequest();
+            ajax.onload=function(){
+                const data=JSON.parse(ajax.responseText);
+                clearProducts();
+                displayProducts(data);
+            }
             const url=getProductsUrl(keyword);
             ajax.open("GET", url);
             ajax.send();
 
-            const response=JSON.parse(ajax.responseText);
-            console.log(response);
+            // tidak bisa memanggil response ajax secara synhcronous
+            // const response=JSON.parse(ajax.responseText);
+            // console.log(response);
         }
 
         function clearProducts() {
