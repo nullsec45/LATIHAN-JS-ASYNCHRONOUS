@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <title>AJAX</title>
     <script>
-        function getProductsUrl(keyword) {
-            return `https://www.blibli.com/backend/search/products?searchTerm=${keyword}`;
+        function getMoviesUrl(keyword) {
+            return `https://omdbapi.com/?apikey=438f2b3f&s=${keyword}`;
         }
 
-        function getProducts(keyword, callbackSuccess, callbackError) {
+        function getMovies(keyword, callbackSuccess, callbackError) {
             // Code AJAX Here!
             const ajax=new XMLHttpRequest();
             ajax.onload=function(){
@@ -19,7 +19,8 @@
                     callbackError();
                 }
             }
-            const url=getProductsUrl(keyword);
+            const url=getMoviesUrl(keyword);
+            console.log(url);
             ajax.open("GET", url);
             ajax.send();
 
@@ -28,70 +29,73 @@
             // console.log(response);
         }
 
-        function getProductsError(){
-            console.log("Error get products");
-            alert("Error get products");
+        function getMoviesError(){
+            console.log("Error get Movies");
+            alert("Error get Movies");
         }
 
-        function clearProducts() {
-            const productUl = document.getElementById("products");
-            productUl.textContent = "";
+        function clearMovies() {
+            const MovieUl=document.getElementById("movies");
+            MovieUl.textContent = "";
         }
 
-        function displayProducts(data) {
-            data.data.products.forEach(product => displayProduct(product));
+        function displayMovies(data) {
+            const movies=data.Search;
+            movies.forEach(movie => displayMovie(movie));
         }
 
-        function displayProduct(product) {
-            const productLi = document.createElement("li");
-            productLi.textContent = product.name;
+        function displayMovie(movie) {
+            const MovieLi = document.createElement("li");
+            MovieLi.textContent = movie.Title;
 
-            const productUl = document.getElementById("products");
-            productUl.appendChild(productLi);
+            const MovieUl = document.getElementById("movies");
+            MovieUl.appendChild(MovieLi);
         }
 
-        function clearTableProducts() {
-            const productUl = document.getElementById("table-products");
-            productUl.textContent = "";
+        function clearTableMovies() {
+            const MovieUl = document.getElementById("table-movies");
+            MovieUl.textContent = "";
         }
 
-        function displayTableProducts(data) {
+        function displayTableMovies(data) {
             const table = document.createElement("table");
             table.setAttribute("border", 1);
 
             let index = 0;
-            data.data.products.forEach(product => {
-                table.insertRow(index).insertCell(0).innerText = product.name;
+            const movies=data.Search;
+            movies.forEach(movie => {
+                table.insertRow(index).insertCell(0).innerText = movie.Title;
                 index++;
             });
 
-            const tableProduct = document.getElementById("table-products");
-            tableProduct.appendChild(table);
+            const tableMovie = document.getElementById("table-movies");
+            tableMovie.appendChild(table);
         }
 
         function buttonClick(type) {
+            clearMovies();
             if(type === "table"){
-                getProducts(document.getElementById("keyword").value, function(data){
-                    clearTableProducts();
-                    displayTableProducts(data);
+                getMovies(document.getElementById("keyword").value, function(data){
+                    clearTableMovies();
+                    displayTableMovies(data);
                 }, function(){
-                    getProductsError();
+                    getMoviesError();
+                });
+            }else{
+                getMovies(document.getElementById("keyword").value, function(data){
+                    clearMovies();
+                    displayMovies(data);
+                }, function(){
+                    getMoviesError();
                 });
             }
-            getProducts(document.getElementById("keyword").value, function(data){
-                clearProducts();
-                displayProducts(data);
-            }, function(){
-                getProductsError();
-            });
-            console.log(`Success click button`);
         }
     </script>
 </head>
 <body>
 <input type="text" id="keyword">
-<button onclick="buttonClick('table')">Search Products</button>
-<ul id="products"></ul>
-<div id="table-products"></div>
+<button onclick="buttonClick('table')">Search Movies</button>
+<ul id="movies"></ul>
+<div id="table-movies"></div>
 </body>
 </html>
